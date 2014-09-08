@@ -1,0 +1,229 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <title>Nos Iris Clone</title>
+
+    <script src="js/PIXI.js"></script>
+    <script src="js/tween.js"></script>
+    <script src="js/keypress.js"></script>
+</head>
+
+<body>
+    <script>
+    /*  Listener keyboard   */
+    var listener = new window.keypress.Listener();
+
+    var STAGE_WIDTH = 1280,
+        STAGE_HEIGHT = 720,
+        selectedIndex = 0,
+        imgSize = 200;
+    var outsideTexts = [];
+    var centerContainer = null;
+    var counter = null;
+
+    var fontNormal = {
+        font: "24px Open Sans",
+        fill: "#FFFFFF"
+    };
+
+    function init() {
+
+        // create an new instance of a pixi stage
+        var stage = new PIXI.Stage(0xFFFFFF);
+
+        // create a renderer instance
+        var renderer = PIXI.autoDetectRenderer(STAGE_WIDTH, STAGE_HEIGHT, null, true, true);
+
+        // add the renderer view element to the DOM
+        document.body.appendChild(renderer.view);
+        renderer.view.style.position = "absolute";
+        renderer.view.style.top = "0px";
+        renderer.view.style.left = "0px";
+
+        /*  Background image   */
+        var background = new PIXI.Sprite.fromImage("img/background.png");
+        stage.addChild(background);
+
+        /*  Hours    */
+        var d = new Date();
+        var pad = "00";
+        var hours = new PIXI.Text((pad + d.getHours()).slice(-pad.length) + ':' + (pad + d.getMinutes()).slice(-pad.length), {
+            font: "30px Open Sans",
+            fill: "#FFFFFF"
+        });
+        hours.position.x = hours.position.y = 50;
+        stage.addChild(hours);
+
+        /*  Dividing line    */
+        var graphics = new PIXI.Graphics();
+        graphics.lineStyle(1, 0xFFFFFF, 1);
+        graphics.moveTo(0, 360);
+        graphics.lineTo(1280, 360);
+        stage.addChild(graphics);
+
+        centerContainer = new PIXI.DisplayObjectContainer();
+        var centerMask = new PIXI.Graphics();
+        centerMask.beginFill(0xFFFFFF, 1);
+        centerMask.drawRect(0, STAGE_HEIGHT / 2, STAGE_WIDTH, imgSize);
+        centerMask.endFill();
+        centerContainer.mask = centerMask;
+        stage.addChild(centerContainer);
+
+        var outsideContainer = new PIXI.DisplayObjectContainer();
+        var outsideMask = new PIXI.Graphics();
+        outsideMask.beginFill(0xFFFFFF, 1);
+        outsideMask.drawRect(0, 0, STAGE_WIDTH, STAGE_HEIGHT / 2 - (imgSize / 2));
+        outsideMask.drawRect(0, STAGE_HEIGHT / 2 + imgSize, STAGE_WIDTH, STAGE_HEIGHT / 2 - imgSize);
+        outsideMask.endFill();
+        outsideContainer.mask = outsideMask;
+        stage.addChild(outsideContainer);
+
+
+        /*  Render menu */
+        for (var i = 0; i < menuTitles.length; i++) {
+
+            var offsetMenu = i * imgSize;
+
+            var channelImage = new PIXI.Sprite.fromImage('img/' + menuTitles[i].channel);
+            channelImage.position.x = 450;
+            channelImage.position.y = (STAGE_HEIGHT / 2) + 20 + offsetMenu;
+            centerContainer.addChild(channelImage);
+
+            var selectedMenuTitle = new PIXI.Text(menuTitles[i].title + '  ' + menuTitles[i].season + '  ' + menuTitles[i].episode, {
+                font: "34px Open Sans",
+                fill: "#FFFFFF"
+            });
+            selectedMenuTitle.position.x = 450;
+            selectedMenuTitle.position.y = (STAGE_HEIGHT / 2) + 60 + offsetMenu;
+            centerContainer.addChild(selectedMenuTitle);
+
+            var selectedRecorded = new PIXI.Text("GRAVADO A " + menuTitles[i].recordedDate + ' - ' + menuTitles[i].time, {
+                font: "28px Open Sans",
+                fill: "#FFFFFF"
+            });
+            selectedRecorded.position.x = 450;
+            selectedRecorded.position.y = (STAGE_HEIGHT / 2) + 120 + offsetMenu;
+            centerContainer.addChild(selectedRecorded);
+
+            var episodeImage = new PIXI.Sprite.fromImage('img/' + menuTitles[i].image);
+            episodeImage.position.x = 50;
+            episodeImage.position.y = (STAGE_HEIGHT / 2) + offsetMenu;
+            centerContainer.addChild(episodeImage);
+
+            var title = new PIXI.Text(menuTitles[i].title + '   ' + menuTitles[i].season + '   ' + menuTitles[i].episode, fontNormal);
+            title.position.x = 450;
+            title.position.y = (i == selectedIndex) ? (STAGE_HEIGHT / 2) - 100 : (STAGE_HEIGHT / 2) + imgSize + (i - 1) * 40;
+            outsideContainer.addChild(title);
+            outsideTexts.push(title);
+        };
+
+        /*   Render center info    */
+        counter = new PIXI.Text((selectedIndex + 1) + '/' + menuTitles.length, {
+            font: "16px Open Sans",
+            fill: "#FFFFFF"
+        });
+        counter.position.x = 450;
+        counter.position.y = STAGE_HEIGHT / 2 - 90;
+        stage.addChild(counter);
+
+        var areaText = new PIXI.Text("PESQUISA SOBREVIVER AO ALASCA", fontNormal);
+        areaText.position.x = 450;
+        areaText.position.y = STAGE_HEIGHT / 2 - 70;
+        stage.addChild(areaText);
+
+        var otherMenus = new PIXI.Text("GRAVACOES     GUIA     VIDEOCLUBE", fontNormal);
+        otherMenus.position.x = 450;
+        otherMenus.position.y = STAGE_HEIGHT / 2 - 40;
+        stage.addChild(otherMenus);
+
+        otherMenus.position.x = 450;
+        otherMenus.position.y = STAGE_HEIGHT / 2 - 40;
+        stage.addChild(otherMenus);
+
+        function animate() {
+            requestAnimFrame(animate);
+            counter.setText((selectedIndex + 1) + '/' + menuTitles.length);
+            renderer.render(stage);
+        }
+
+        requestAnimFrame(animate);
+    }
+
+    function animateImage() {
+        TweenLite.to(centerContainer, 0.5, {
+            y: -imgSize * selectedIndex,
+            ease: Power2.outCubic,
+        });
+    }
+
+    function animateOutsideMenu(isDown) {
+        for (var i = 0; i < outsideTexts.length; i++) {
+
+            var posY = 0;
+
+            if (i < selectedIndex || (i == selectedIndex && !isDown))
+                posY = (STAGE_HEIGHT / 2) - 100 - (selectedIndex - i) * 40;
+            else
+                posY = (STAGE_HEIGHT / 2) + imgSize + (i - selectedIndex - 1) * 40;
+
+            TweenLite.to(outsideTexts[i], 0.5, {
+                y: posY,
+                ease: Power2.outCubic
+            });
+        };
+    }
+
+    function animate(isDown)
+    {
+        animateOutsideMenu(isDown);
+        animateImage();
+    }
+
+    listener.simple_combo("up", function() {
+        if (selectedIndex <= 0) return;
+        selectedIndex--;
+        animate(false);
+    });
+
+    listener.simple_combo("down", function() {
+        if (selectedIndex >= menuTitles.length - 1) return;
+        selectedIndex++;
+        animate(true);
+    });
+
+    WebFontConfig = {
+        google: {
+            families: ['Open+Sans:latin']
+        },
+
+        active: function() {
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.onreadystatechange = function() {
+                if (httpRequest.readyState === 4) {
+                    if (httpRequest.status === imgSize) {
+                        menuTitles = JSON.parse(httpRequest.responseText);
+                        init();
+                    }
+                }
+            };
+
+            httpRequest.open('GET', 'data/episodes.json');
+            httpRequest.send();
+        }
+    };
+
+    (function() {
+        var wf = document.createElement('script');
+        wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
+            '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+        wf.type = 'text/javascript';
+        wf.async = 'true';
+        var s = document.getElementsByTagName('script')[0];
+        s.parentNode.insertBefore(wf, s);
+    })();
+    </script>
+
+</body>
+
+</html>

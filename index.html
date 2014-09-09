@@ -33,21 +33,22 @@
         WebFont.load({
             google: {
                 families: ['Open+Sans:latin']
+            },
+            active: function() {
+                var httpRequest = new XMLHttpRequest();
+                httpRequest.onreadystatechange = function() {
+                    if (httpRequest.readyState === 4) {
+                        if (httpRequest.status === 200) {
+                            menuTitles = JSON.parse(httpRequest.responseText);
+                            StartRender();
+                        }
+                    }
+                };
+
+                httpRequest.open('GET', 'public/data/episodes.json');
+                httpRequest.send();
             }
         });
-
-        var httpRequest = new XMLHttpRequest();
-        httpRequest.onreadystatechange = function() {
-            if (httpRequest.readyState === 4) {
-                if (httpRequest.status === 200) {
-                    menuTitles = JSON.parse(httpRequest.responseText);
-                    StartRender();
-                }
-            }
-        };
-
-        httpRequest.open('GET', 'public/data/episodes.json');
-        httpRequest.send();
     }
     
     function StartRender() {

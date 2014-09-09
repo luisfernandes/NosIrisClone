@@ -42,7 +42,7 @@
         renderer.view.style.left = "0px";
 
         /*  Background image   */
-        var background = new PIXI.Sprite.fromImage("public/assets/images/background.png");
+        var background = new PIXI.Sprite.fromImage("public/assets/img/background.png");
         stage.addChild(background);
 
         /*  Hours    */
@@ -85,7 +85,7 @@
 
             var offsetMenu = i * imgSize;
 
-            var channelImage = new PIXI.Sprite.fromImage('public/assets/images/' + menuTitles[i].channel);
+            var channelImage = new PIXI.Sprite.fromImage('public/assets/img/' + menuTitles[i].channel);
             channelImage.position.x = 450;
             channelImage.position.y = (STAGE_HEIGHT / 2) + 20 + offsetMenu;
             centerContainer.addChild(channelImage);
@@ -106,7 +106,7 @@
             selectedRecorded.position.y = (STAGE_HEIGHT / 2) + 120 + offsetMenu;
             centerContainer.addChild(selectedRecorded);
 
-            var episodeImage = new PIXI.Sprite.fromImage('public/assets/images/' + menuTitles[i].image);
+            var episodeImage = new PIXI.Sprite.fromImage('public/assets/img/' + menuTitles[i].image);
             episodeImage.position.x = 50;
             episodeImage.position.y = (STAGE_HEIGHT / 2) + offsetMenu;
             centerContainer.addChild(episodeImage);

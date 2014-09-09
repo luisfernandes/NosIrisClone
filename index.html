@@ -7,9 +7,11 @@
     <script src="public/assets/js/pixi.js"></script>
     <script src="public/assets/js/tween.js"></script>
     <script src="public/assets/js/keypress.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+
 </head>
 
-<body>
+<body onload="Init()">
     <script>
     /*  Listener keyboard   */
     var listener = new window.keypress.Listener();
@@ -27,7 +29,28 @@
         fill: "#FFFFFF"
     };
 
-    function init() {
+    function Init() {
+        WebFont.load({
+            google: {
+                families: ['Open+Sans:latin']
+            }
+        });
+
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function() {
+            if (httpRequest.readyState === 4) {
+                if (httpRequest.status === 200) {
+                    menuTitles = JSON.parse(httpRequest.responseText);
+                    StartRender();
+                }
+            }
+        };
+
+        httpRequest.open('GET', 'public/data/episodes.json');
+        httpRequest.send();
+    }
+    
+    function StartRender() {
 
         // create an new instance of a pixi stage
         var stage = new PIXI.Stage(0xFFFFFF);
@@ -42,7 +65,7 @@
         renderer.view.style.left = "0px";
 
         /*  Background image   */
-        var background = new PIXI.Sprite.fromImage("public/assets/img/background.png");
+        var background = new PIXI.Sprite.fromImage("public/assets/images/background.png");
         stage.addChild(background);
 
         /*  Hours    */
@@ -85,7 +108,7 @@
 
             var offsetMenu = i * imgSize;
 
-            var channelImage = new PIXI.Sprite.fromImage('public/assets/img/' + menuTitles[i].channel);
+            var channelImage = new PIXI.Sprite.fromImage('public/assets/images/' + menuTitles[i].channel);
             channelImage.position.x = 450;
             channelImage.position.y = (STAGE_HEIGHT / 2) + 20 + offsetMenu;
             centerContainer.addChild(channelImage);
@@ -106,7 +129,7 @@
             selectedRecorded.position.y = (STAGE_HEIGHT / 2) + 120 + offsetMenu;
             centerContainer.addChild(selectedRecorded);
 
-            var episodeImage = new PIXI.Sprite.fromImage('public/assets/img/' + menuTitles[i].image);
+            var episodeImage = new PIXI.Sprite.fromImage('public/assets/images/' + menuTitles[i].image);
             episodeImage.position.x = 50;
             episodeImage.position.y = (STAGE_HEIGHT / 2) + offsetMenu;
             centerContainer.addChild(episodeImage);
@@ -174,8 +197,7 @@
         };
     }
 
-    function animate(isDown)
-    {
+    function animate(isDown) {
         animateOutsideMenu(isDown);
         animateImage();
     }
@@ -192,36 +214,6 @@
         animate(true);
     });
 
-    WebFontConfig = {
-        google: {
-            families: ['Open+Sans:latin']
-        },
-
-        active: function() {
-            var httpRequest = new XMLHttpRequest();
-            httpRequest.onreadystatechange = function() {
-                if (httpRequest.readyState === 4) {
-                    if (httpRequest.status === imgSize) {
-                        menuTitles = JSON.parse(httpRequest.responseText);
-                        init();
-                    }
-                }
-            };
-
-            httpRequest.open('GET', 'public/data/episodes.json');
-            httpRequest.send();
-        }
-    };
-
-    (function() {
-        var wf = document.createElement('script');
-        wf.src = ('https:' == document.location.protocol ? 'https' : 'http') +
-            '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-        wf.type = 'text/javascript';
-        wf.async = 'false';
-        var s = document.getElementsByTagName('script')[0];
-        s.parentNode.insertBefore(wf, s);
-    })();
     </script>
 
 </body>

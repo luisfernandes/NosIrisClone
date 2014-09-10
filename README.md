@@ -2,7 +2,9 @@ NosIrisClone
 ============
 
 Teste à biblioteca PixiJS.
+
 Experimentei recriar o interface da Iris (NOS) que se vê no último link usando a biblioteca PixiJS.
+
 Esta bilioteca permite criar gráficos acelerados pela GPU usando WebGL ou como alternativa o canvas.
 
 Fica a demonstração do código criado.

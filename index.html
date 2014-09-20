@@ -8,6 +8,8 @@
     <script src="public/assets/js/tween.js"></script>
     <script src="public/assets/js/keypress.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/webfont/1.4.7/webfont.js"></script>
+    <script src="public/assets/js/hammer.min.js"></script>
+
 
 </head>
 
@@ -23,11 +25,24 @@
     var outsideTexts = [];
     var centerContainer = null;
     var counter = null;
+    var panOffset = 0;
 
     var fontNormal = {
         font: "24px Open Sans",
         fill: "#FFFFFF"
     };
+
+
+    // create a simple instance
+    // by default, it only adds horizontal recognizers
+    var mc = new Hammer(document.body);
+
+    // let the pan gesture support all directions.
+    // this will block the vertical scrolling on a touch-device while on the element
+    mc.get('pan').set({
+        threshold: 10,
+        direction: Hammer.DIRECTION_VERTICAL
+    });
 
     function Init() {
         WebFont.load({
@@ -50,7 +65,7 @@
             }
         });
     }
-    
+
     function StartRender() {
 
         // create an new instance of a pixi stage
@@ -203,18 +218,40 @@
         animateImage();
     }
 
-    listener.simple_combo("up", function() {
-        if (selectedIndex <= 0) return;
-        selectedIndex--;
-        animate(false);
-    });
+    listener.simple_combo("up", moveDown);
+    listener.simple_combo("down", moveUp);
 
-    listener.simple_combo("down", function() {
+    function moveUp() {
         if (selectedIndex >= menuTitles.length - 1) return;
         selectedIndex++;
         animate(true);
+    }
+
+    function moveDown() {
+        if (selectedIndex <= 0) return;
+        selectedIndex--;
+        animate(false);
+    }
+
+    // listen to events...
+    mc.on("panup pandown", function(ev) {
+        var currentOffset = Math.round(ev.deltaY / 80);
+        // (distance < 0 && selectedIndex >= menuTitles.length - 1) || (distance > 0 && selectedIndex <= 0) || 
+        if (panOffset != currentOffset)
+        {
+            panOffset = currentOffset;
+            if(ev.direction == Hammer.DIRECTION_UP)
+                moveUp();
+            else
+                moveDown();
+        }
+        
+        animate(false);
     });
 
+    mc.on("panstart", function(ev) {
+        panOffset = 0;
+    });
     </script>
 
 </body>
